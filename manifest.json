@@ -1,0 +1,7 @@
+{
+  "id": "x7k9m2p4q8r1w5",
+  "name": "Mastodon Plugin for SocialGata",
+  "version": "1.0.0",
+  "description": "Browse Mastodon feeds, users, and trending topics",
+  "script": "dist/index.js"
+}
