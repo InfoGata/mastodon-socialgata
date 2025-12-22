@@ -7,10 +7,10 @@
     "vite-plugin-singlefile": "^2.2.0"
   },
   "scripts": {
-    "build": "vite build --config plugin.vite.config.ts"
+    "build": "tsc && vite build --config plugin.vite.config.ts"
   },
   "devDependencies": {
-    "@infogata/socialgata-plugin-typings": "^0.1.0",
+    "@infogata/socialgata-plugin-typings": "^0.3.0",
     "typescript": "^5.0.0",
     "vite": "^6.2.4"
   },
