@@ -3,5 +3,7 @@
   "name": "Mastodon Plugin for SocialGata",
   "version": "1.0.0",
   "description": "Browse Mastodon feeds, users, and trending topics",
-  "script": "dist/index.js"
+  "script": "dist/index.js",
+  "updateUrl": "https://cdn.jsdelivr.net/gh/InfoGata/mastodon-socialgata@latest/manifest.json",
+  "homepage": "https://github.com/InfoGata/mastodon-socialgata"
 }
