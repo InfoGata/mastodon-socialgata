@@ -70,24 +70,23 @@ const statusToPost = (status: MastodonStatus): Post => {
 // Plugin Methods
 
 const getFeed = async (request?: GetFeedRequest): Promise<GetFeedResponse> => {
-  const url = new URL(`${baseUrl}/api/v1/timelines/public`);
+  const url = new URL(`${baseUrl}/api/v1/trends/statuses`);
   url.searchParams.append("limit", "30");
 
   if (request?.pageInfo?.page) {
-    url.searchParams.append("max_id", String(request.pageInfo.page));
+    url.searchParams.append("offset", String(request.pageInfo.page));
   }
 
   const response = await application.networkRequest(url.toString());
   const statuses: MastodonStatus[] = await response.json();
   const items = statuses.map(statusToPost);
 
-  // Get the last status ID for pagination
-  const lastStatus = statuses[statuses.length - 1];
+  const currentOffset = Number(request?.pageInfo?.page ?? 0);
 
   return {
     items,
     pageInfo: {
-      nextPage: lastStatus?.id,
+      nextPage: items.length > 0 ? String(currentOffset + items.length) : undefined,
     },
   };
 };
