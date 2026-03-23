@@ -1,4 +1,3 @@
-const pluginName = "mastodon";
 const baseUrl = "https://mastodon.social";
 
 // Mastodon API types
@@ -61,7 +60,6 @@ const statusToPost = (status: MastodonStatus): Post => {
     score: actualStatus.favourites_count,
     numOfComments: actualStatus.replies_count,
     publishedDate: actualStatus.created_at,
-    pluginId: pluginName,
     originalUrl: actualStatus.url,
     thumbnailUrl: imageAttachment?.preview_url,
     url: videoAttachment?.url ?? imageAttachment?.url,
