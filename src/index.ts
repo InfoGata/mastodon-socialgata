@@ -1,9 +1,16 @@
 const baseUrl = "https://mastodon.social";
 
 // Mastodon API types
+/** The shared `User` type has no handle field, so extend it as the Twitter plugin does. */
+interface UserProfile extends User {
+  handle?: string;
+}
+
 interface MastodonAccount {
   id: string;
   username: string;
+  /** Fully qualified handle; bare `user` when local, `user@instance` when remote. */
+  acct: string;
   display_name: string;
   avatar: string;
   url: string;
@@ -91,26 +98,49 @@ const getFeed = async (request?: GetFeedRequest): Promise<GetFeedResponse> => {
   };
 };
 
+/**
+ * Resolves an apiId to an account.
+ *
+ * The apiId is a numeric account id for authors this plugin emits, but mentions
+ * in post bodies only carry a handle (`user` or `user@instance`), so those are
+ * resolved through the lookup endpoint before hitting the id-keyed endpoints.
+ */
+const resolveAccount = async (apiId: string): Promise<MastodonAccount> => {
+  if (/^\d+$/.test(apiId)) {
+    const response = await application.networkRequest(
+      `${baseUrl}/api/v1/accounts/${apiId}`
+    );
+    return response.json();
+  }
+
+  const lookupUrl = new URL(`${baseUrl}/api/v1/accounts/lookup`);
+  lookupUrl.searchParams.append("acct", apiId.replace(/^@/, ""));
+  const response = await application.networkRequest(lookupUrl.toString());
+  return response.json();
+};
+
 const getUser = async (request: GetUserRequest): Promise<GetUserResponse> => {
   // First get the account info
-  const accountUrl = `${baseUrl}/api/v1/accounts/${request.apiId}`;
-  const accountResponse = await application.networkRequest(accountUrl);
-  const account: MastodonAccount = await accountResponse.json();
+  const account = await resolveAccount(request.apiId);
 
-  // Then get their statuses
-  const statusesUrl = new URL(`${baseUrl}/api/v1/accounts/${request.apiId}/statuses`);
+  // Then get their statuses, keyed on the resolved id rather than the request
+  const statusesUrl = new URL(`${baseUrl}/api/v1/accounts/${account.id}/statuses`);
   statusesUrl.searchParams.append("limit", "30");
 
   const statusesResponse = await application.networkRequest(statusesUrl.toString());
   const statuses: MastodonStatus[] = await statusesResponse.json();
   const items = statuses.map(statusToPost);
 
+  const user: UserProfile = {
+    apiId: account.id,
+    name: account.display_name || account.username,
+    avatar: account.avatar,
+    // Without this the profile header falls back to showing the numeric apiId.
+    handle: account.acct,
+  };
+
   return {
-    user: {
-      apiId: account.id,
-      name: account.display_name || account.username,
-      avatar: account.avatar,
-    },
+    user,
     items,
   };
 };
