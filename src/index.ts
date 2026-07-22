@@ -1,11 +1,6 @@
 const baseUrl = "https://mastodon.social";
 
 // Mastodon API types
-/** The shared `User` type has no handle field, so extend it as the Twitter plugin does. */
-interface UserProfile extends User {
-  handle?: string;
-}
-
 interface MastodonAccount {
   id: string;
   username: string;
@@ -131,7 +126,7 @@ const getUser = async (request: GetUserRequest): Promise<GetUserResponse> => {
   const statuses: MastodonStatus[] = await statusesResponse.json();
   const items = statuses.map(statusToPost);
 
-  const user: UserProfile = {
+  const user: User = {
     apiId: account.id,
     name: account.display_name || account.username,
     avatar: account.avatar,
