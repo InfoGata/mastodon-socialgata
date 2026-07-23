@@ -1,7 +1,8 @@
 {
   "id": "x7k9m2p4q8r1w5",
+  "alias": "mastodon",
   "name": "Mastodon Plugin for SocialGata",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Browse Mastodon feeds, users, and trending topics",
   "script": "dist/index.js",
   "updateUrl": "https://cdn.jsdelivr.net/gh/InfoGata/mastodon-socialgata@latest/manifest.json",
